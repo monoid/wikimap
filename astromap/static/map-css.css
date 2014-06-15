@@ -1,0 +1,13 @@
+html, body, #map { width: 100%; height: 100%; margin: 0; padding: 0; }
+div.req { margin-top: 0.3em; }
+#error {display: none; margin: red 1px solid; padding: 1em;}
+.usercard h3 { font-size: 100%; font-height: bold;}
+.fmcontrol { position: absoulte; background: white; border: 1px solid black; cursor: pointer; height: 16px; width: 7em; font-size: 12px; font-family: Arial, sans-serif; text-align: center; }
+#srchspace {position: absolute; top: 28px; right: 8px; width: 180px; font: 14px Arial bold; bottom: 150px; display: none; overflow: auto; }
+#srchoutput { border: 1px black solid; background: white; }
+#srchoutput ul { margin: 0; padding: 0;  list-style: none; padding-top: 12px; }
+#srchoutput li { display: block; margin: 1em 1ex;}
+#srchclose { border: 0px none ; margin: 0px; padding: 0px; position: absolute; right: 11px; top: 11px; width: 12px; height: 12px; -moz-user-select: none; cursor: pointer; z-index: 10000; }
+.srchnthng { padding: 1em 1ex; font-style: italic; }
+.coords { font-size: 83%; color: #222; }
+.pointid { float: right; font-size: 72%; color: #666; margin: 3px 0.3em; }
