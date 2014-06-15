@@ -22,7 +22,7 @@ SECRET_KEY = 'k3363a(v)8azt%(typu%5v#%e3c=%#*uo9s^oo9r4w*oi83-gv'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = DEBUG
 
 ALLOWED_HOSTS = []
 
@@ -58,8 +58,10 @@ WSGI_APPLICATION = 'ivanivanych.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.contrib.gis.db.backends.mysql',
+        'NAME': 'nska',
+        'USER': 'nska',
+        'PASSWORD': 'testpass',
     }
 }
 
@@ -81,3 +83,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+
+TEMPLATE_DIRS = (
+    os.path.join(BASE_DIR, 'astromap', 'templates'),
+)
+
+GOOGLE_MAPS_KEY = 'AIzaSyBC72uiKsPtdVqm-ncDshonzmUABv-Ra-A'
