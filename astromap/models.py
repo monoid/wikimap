@@ -28,5 +28,4 @@ class Point(models.Model):
     class Meta:
         db_table = 'points'
         ordering = ['-ts']
-        get_latest_by = 'ts'
         managed = False
