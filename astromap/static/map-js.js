@@ -1,7 +1,7 @@
 var map, mc, windowFeed, icons;
 
 function _(str) {
-    return LANG[str] || str;
+    return gettext(str);
 }
 
 function parseJSON(txt) {
