@@ -11,7 +11,6 @@ from astromap import models, utils
 # Create your views here.
 
 @require_safe
-@vary_on_headers('Accept-Language')
 def index(request):
     u""" Index page.
     """
