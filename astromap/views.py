@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.utils.translation import ugettext as _
 from django.utils.translation import get_language_from_request
 from django.views.decorators.http import require_POST, require_safe
-from django.views.decorators.vary import vary_on_headers
 import json
 
 from astromap import models, utils
