@@ -93,7 +93,7 @@ def login(request, token=None):
         kook = utils.get_kook(request, response)
         response.write(render_to_string('login-show.html', {
             'kook': kook,
-            'full_url': request.build_absolute_uri(),
+            'full_url': request.build_absolute_uri().rstrip('/'),
         }, RequestContext(request)))
         return response
 
