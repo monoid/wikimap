@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 from django.contrib.gis.geos import Point
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.translation import get_language_from_request
 from django.views.decorators.http import require_POST, require_safe
 import json
 
-from astromap import models, utils
+from astromap import forms, models, utils
 # Create your views here.
+
 
 @require_safe
 def index(request):
@@ -25,8 +25,6 @@ def index(request):
     response.write(render_to_string('index.html', {
         'PTS_JSON': json.dumps(pts),
         'LANG': lang,
-        # TODO use django.utils.translation
-        'lang_file_js': 'lang/lang_'+lang+'.js',
         'type': map_type,
     }, RequestContext(request)))
     return response
@@ -60,81 +58,106 @@ def ajax_handler(request):
     ip = utils.inet_aton(request.META['REMOTE_ADDR'])
 
     if cmd == 'insert':
-        # TODO: insert form
-        title = request.POST['txt'].strip()
-        lat = float(request.POST['lat'])
-        lon = float(request.POST['lon'])
-        zoom = int(request.POST['zoom'])
-        if title:
-            pt = models.Point.objects.create(
-                title=title,
-                mapid=2,
-                zoom=zoom,
-                point=Point(lat, lon),
-                kook=kook,
-                ip=ip,
-                ptxt='',  # Was used for debug of PHP version...
-            )
-            json.dump({
-                'status': 'OK',
-                'id': pt.id
-            }, response)
+        form = forms.InsertForm(request.POST)
+        if form.is_valid():
+            title = form.cleaned_data['txt'].strip()
+            lat = form.cleaned_data['lat']
+            lon = form.cleaned_data['lon']
+            zoom = form.cleaned_data['zoom']
+            if title:
+                pt = models.Point.objects.create(
+                    title=title,
+                    mapid=2,
+                    zoom=zoom,
+                    point=Point(lat, lon),
+                    kook=kook,
+                    ip=ip,
+                    ptxt='',  # Was used for debug of PHP version...
+                )
+                json.dump({
+                    'status': 'OK',
+                    'id': pt.id
+                }, response)
+            else:
+                json.dump({
+                    'status': 'errror',
+                    'text': u"Title cannot be empty."
+                }, response)
         else:
             json.dump({
-                'status': 'errror',
-                'text': u"Title cannot be empty."
+                'status': 'error',
+                'text': u"Invalid query."
             }, response)
 
     elif cmd == 'updattr':
-        # TODO updattr form
-        title = request.POST['txt'].strip()
-        id = int(request.POST['id'])
-        if title:
+        form = forms.UpdattrForm(request.POST)
+        if form.is_valid():
+            title = form.cleaned_data['txt'].strip()
+            pid = form.cleaned_data['id']
+            if title:
+                try:
+                    pt = models.Point.objects.get(id=pid, kook=kook)
+                    pt.title = title
+                    pt.save()
+                except models.Point.DoesNotExist:
+                    pass  # Если точка не найдена, делаем вид, что всё ОК
+                json.dump({
+                    'status': 'OK'
+                }, response)
+            else:
+                json.dump({
+                    'status': 'errror',
+                    'text': u"Title cannot be empty."
+                }, response)
+        else:
+            json.dump({
+                'status': 'error',
+                'text': u"Invalid query."
+            }, response)
+
+    elif cmd == 'updgeom':
+        form = forms.UpdgeomForm(request.POST)
+        if form.is_valid():
+            pid = form.cleaned_data['id']
+            lat = form.cleaned_data['lat']
+            lon = form.cleaned_data['lon']
+            zoom = form.cleaned_data['zoom']
+
             try:
-                pt = models.Point.objects.get(id=id, kook=kook)
-                pt.title = title
+                pt = models.Point.objects.get(id=pid, kook=kook)
+                pt.zoom = zoom
+                pt.point = Point(lat, lon)
                 pt.save()
             except models.Point.DoesNotExist:
-                pass  # Если точка не найдена, делаем вид, что всё ОК
+                pass  # Если точка не найдена или чужая, делаем вид, что всё ОК
             json.dump({
                 'status': 'OK'
             }, response)
         else:
             json.dump({
-                'status': 'errror',
-                'text': u"Title cannot be empty."
+                'status': 'error',
+                'text': u"Invalid query."
             }, response)
 
-    elif cmd == 'updgeom':
-        # TODO updgeom form
-        id = int(request.POST['id'])
-        lat = float(request.POST['lat'])
-        lon = float(request.POST['lon'])
-        zoom = int(request.POST['zoom'])
-
-        try:
-            pt = models.Point.objects.get(id=id, kook=kook)
-            pt.zoom = zoom
-            pt.point = Point(lat, lon)
-            pt.save()
-        except models.Point.DoesNotExist:
-            pass  # Если точка не найдена или чужая, делаем вид, что всё ОК
-        json.dump({
-            'status': 'OK'
-        }, response)
-
     elif cmd == 'del':
-        # TODO del form
-        id = int(request.POST['id'])
+        form = forms.DelForm(request.POST)
+        if form.is_valid():
+            pid = form.cleaned_data['id']
 
-        try:
-            pt = models.Point.objects.get(id=id, kook=kook)
-            pt.delete()
-        except models.Point.DoesNotExist:
-            pass  # Если точка не найдена или чужая, делаем вид, что всё ОК
-        json.dump({
-            'status': 'OK'
-        }, response)
+            try:
+                pt = models.Point.objects.get(id=pid, kook=kook)
+                pt.delete()
+            except models.Point.DoesNotExist:
+                pass  # Если точка не найдена или чужая, делаем вид, что всё ОК
+            json.dump({
+                'status': 'OK'
+            }, response)
+        else:
+            json.dump({
+                'status': 'error',
+                'text': u"Invalid query."
+            }, response)
+
     else:
         json.dump({
             'status': 'error',
