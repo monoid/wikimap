@@ -38,6 +38,10 @@ def gen_rnd_kook(request):
 OLD_AUTH_COOKIE = 'auth'
 AUTH_COOKIE = 'fmauth'
 
+def set_kook(response, kook):
+    response.set_cookie(AUTH_COOKIE, kook, expires=(datetime.datetime.now() +
+                                                   datetime.timedelta(seconds=20000000)))
+
 
 def get_kook(request, response):
     if OLD_AUTH_COOKIE in request.COOKIES:
@@ -47,8 +51,7 @@ def get_kook(request, response):
     else:
         kook = gen_rnd_kook(request)
     # Update cookie time.
-    response.set_cookie(AUTH_COOKIE, kook, expires=(datetime.datetime.now() +
-                                                   datetime.timedelta(seconds=20000000)))
+    set_kook(response, kook)
     return kook
 
 

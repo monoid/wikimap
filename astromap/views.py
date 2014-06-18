@@ -82,7 +82,20 @@ def kml_feed(request):
 
 def login(request, token=None):
     u""" Login page and login handler, both old and social. """
-    return HttpResponse(u'login')
+    if token:
+        response = HttpResponse(content_type='text/html; coding=utf-8')
+        utils.set_kook(response, token)
+        response.write(render_to_string('login-isset.html', {'token': token},
+                                        RequestContext(request)))
+        return response
+    else:
+        response = HttpResponse(content_type='text/html; coding=utf-8')
+        kook = utils.get_kook(request, response)
+        response.write(render_to_string('login-show.html', {
+            'kook': kook,
+            'full_url': request.build_absolute_uri(),
+        }, RequestContext(request)))
+        return response
 
 
 @require_POST
