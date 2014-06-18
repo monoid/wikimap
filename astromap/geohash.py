@@ -42,14 +42,14 @@ def encode(pt, bits):
     lon = lon/360.0+0.5
 
     r = ''
-    l = int(math.ceil(bits/10))
+    l = int(math.ceil(bits/10.0))
 
     for i in xrange(l):
         lat *= 0x20
         lon *= 0x20
 
-        hlt = min(0x1F, int(math.floor(lat)))
-        hln = min(0x1F, int(math.floor(lon)))
+        hlt = min(0x1F, int(lat))
+        hln = min(0x1F, int(lon))
 
         lat -= hlt
         lon -= hln
@@ -60,4 +60,12 @@ def encode(pt, bits):
         lo = b2 & 0x1F
         r += _tr[hi] + _tr[lo]
 
-    return r[:int(math.ceil(bits/5))]
+    return r[:int(math.ceil(bits/5.0))]
+
+
+def encode_zoom(zoom):
+    if zoom < 0:
+        zoom = 0
+    elif zoom > 31:
+        zoom = 31
+    return _tr[zoom]
