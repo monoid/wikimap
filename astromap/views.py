@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.translation import get_language_from_request
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST, require_safe
 import json
 
@@ -12,6 +13,7 @@ from astromap import forms, models, utils
 
 
 @require_safe
+@ensure_csrf_cookie
 def index(request):
     u""" Index page.
     """
