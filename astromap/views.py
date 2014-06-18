@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.contrib.gis.feeds import GeoAtom1Feed, Feed
 from django.contrib.gis.geos import Point
 from django.http import HttpResponse
 from django.template import RequestContext
@@ -8,7 +9,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST, require_safe
 import json
 
-from astromap import forms, models, utils
+from astromap import forms, geohash, models, utils
 # Create your views here.
 
 
@@ -30,6 +31,41 @@ def index(request):
         'type': map_type,
     }, RequestContext(request)))
     return response
+
+
+class AMGeoAtom1Feed(Feed):
+    title = u"Карта астрономов-любителей."
+    subtitle = u"Последние добавленные и измененённые точки."
+    feed_type = GeoAtom1Feed
+    link = '/astromap/atom'
+
+    def geometry(self, item):
+        return None
+
+    def item_geometry(self, item):
+        return item.point
+
+    def items(self):
+        return models.Point.objects.all().order_by('-ts')[:10]
+
+    def item_link(self, item):
+        return ('http://ivan.ivanych.net/astromap/#' +
+                geohash.encode_zoom(item.zoom) +
+                geohash.encode(item.point, 16 + 2*item.zoom))
+
+    def item_title(self, item):
+        return item.title
+
+    def item_description(self, item):
+        return u'%s: %s, %s (#%d)' % (
+            item.title,
+            utils.deg2hms(item.point[0]),
+            utils.deg2hms(item.point[1]),
+            item.id)
+
+    def item_pubdate(self, item):
+        return item.ts
+
 
 
 @require_safe

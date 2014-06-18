@@ -1,12 +1,25 @@
+# -*- coding: utf-8 -*-
 from django.conf import settings
 from django.utils.crypto import get_random_string
 import datetime
 import hashlib
+import math
 import time
 import socket
 import struct
 
 import geohash
+
+
+def deg2hms(deg):
+    h = int(math.floor(deg))
+    deg = 60.0 * (deg - h)
+    m = int(math.floor(deg))
+    deg = 60.0 * (deg - m)
+    s = int(math.floor(deg))
+
+    return u"%02d°%02d'%02d\"" % (h, m, s)
+
 
 def inet_aton(ip):
     # http://stackoverflow.com/questions/5619685/conversion-from-ip-string-to-integer-and-backward-in-python
