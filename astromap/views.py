@@ -9,6 +9,8 @@ from django.utils.translation import get_language_from_request
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST, require_safe
 import json
+import hashlib
+import uuid
 
 from astromap import forms, geohash, models, utils
 # Create your views here.
@@ -112,6 +114,10 @@ class AMGeoAtom1Feed(Feed):
 
     def item_pubdate(self, item):
         return item['ts']
+
+    def item_guid(self, item):
+        hash_id = hashlib.sha1(str(item['id'])).digest()[:16]
+        return uuid.UUID(bytes=hash_id).urn
 
 
 @require_safe
