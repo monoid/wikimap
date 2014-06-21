@@ -1,9 +1,15 @@
+# -*- coding: utf-8 -*-
 import math
+import re
+
 
 # __all__ = ['encode', 'decode', 'encode_zoom']
 from django.contrib.gis.geos.point import Point
 
 _tr = "0123456789bcdefghjkmnpqrstuvwxyz"
+
+
+_gx_re = re.compile('^[%s]+$' % (_tr,))
 
 ## This is an opposite of _tr table: it maps #bABCDE to #bA0B0C0D0E.
 _dr = [0, 1, 4, 5, 16, 17, 20, 21, 64, 65, 68, 69, 80,
@@ -24,8 +30,6 @@ def _unp(v):
 
 def decode(string):
     le = len(string)
-    ln = 0.0
-    lt = 0.0
 
     if le & 1:
         w = _tr.find(string[le-1]) << 5
@@ -106,5 +110,19 @@ def encode_zoom(zoom):
 
 
 def is_valid(string):
-    # TODO real implementation
-    return True
+    u""" Проверка валидности строки.
+
+    >>> is_valid('')
+    False
+    >>> is_valid('a')
+    False
+    >>> is_valid('b')
+    True
+    >>> is_valid('abcd')
+    False
+    >>> is_valid('bcda')
+    False
+    >>> is_valid('bacd')
+    False
+    """
+    return bool(_gx_re.match(string))
