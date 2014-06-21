@@ -84,7 +84,6 @@ class AMGeoAtom1Feed(Feed):
         if mode in self.FULL_MODES:
             return objs
         elif mode in self.WINDOW_MODES:
-            # TODO
             lbx, lby = geohash.decode(params['lb'])
             rtx, rty = geohash.decode(params['rt'])
             poly = Polygon.from_bbox((min(lbx, rtx), min(lby, rty),
