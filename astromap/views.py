@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.contrib.gis.feeds import GeoAtom1Feed, Feed
 from django.contrib.gis.geos import Point
+from django.contrib.gis.geos.polygon import Polygon
 from django.http import HttpResponse
 from django.template import RequestContext
 from django.template.loader import render_to_string
@@ -35,37 +36,83 @@ def index(request):
 
 class AMGeoAtom1Feed(Feed):
     title = u"Карта астрономов-любителей."
-    subtitle = u"Последние добавленные и измененённые точки."
     feed_type = GeoAtom1Feed
     link = '/astromap/atom'
 
-    def geometry(self, item):
-        return None
+    WINDOW_MODES = frozenset(['window', 'map'])
+    LATEST_MODES = frozenset(['latest', 'simple'])
+    FULL_MODES = frozenset(['all', 'full'])
+
+    VALID_MODES = WINDOW_MODES | LATEST_MODES | FULL_MODES
+
+    def get_object(self, request, *args, **kwargs):
+        args = request.GET
+        mode = args.get('mode')
+
+        if mode not in self.VALID_MODES:
+            mode = 'latest'
+
+        if mode in self.WINDOW_MODES:
+            if 'lb' in args and 'rt' in args and \
+                    geohash.is_valid(args['lb']) and \
+                    geohash.is_valid(args['rt']):
+                return {
+                    'mode': mode,
+                    'lb': args['lb'],
+                    'rt': args['rt']
+                }
+            else:
+                return {'mode': 'latest'}
+
+        return {'mode': mode}
+
+    def subtitle(self, params):
+        mode = params['mode']
+        if mode in self.FULL_MODES:
+            return u"Все точки."
+        else:
+            return u"Последние добавленные и изменённые точки."
 
     def item_geometry(self, item):
-        return item.point
+        return item['point']
 
-    def items(self):
-        return models.Point.objects.all().order_by('-ts')[:10]
+    def items(self, params):
+        objs = models.Point.objects.all().order_by('-ts', '-id').values(
+            'id', 'ts', 'title', 'point', 'zoom')
+        mode = params['mode']
+
+        if mode in self.FULL_MODES:
+            return objs
+        elif mode in self.WINDOW_MODES:
+            # TODO
+            lbx, lby = geohash.decode(params['lb'])
+            rtx, rty = geohash.decode(params['rt'])
+            poly = Polygon.from_bbox((min(lbx, rtx), min(lby, rty),
+                                      max(lbx, rtx), max(lby, rty)))
+            objs = objs.filter(point__contained=poly)
+
+        objs = objs[:10]
+
+        return objs
 
     def item_link(self, item):
+        zoom = item['zoom']
         return ('http://ivan.ivanych.net/astromap/#' +
-                geohash.encode_zoom(item.zoom) +
-                geohash.encode(item.point, 16 + 2*item.zoom))
+                geohash.encode_zoom(zoom) +
+                geohash.encode(item['point'], 16 + 2*zoom))
 
     def item_title(self, item):
-        return item.title
+        return item['title']
 
     def item_description(self, item):
         return u'%s: %s, %s (#%d)' % (
-            item.title,
-            utils.deg2hms(item.point[0]),
-            utils.deg2hms(item.point[1]),
-            item.id)
+            item['title'],
+            utils.deg2hms(item['point'][0]),
+            utils.deg2hms(item['point'][1]),
+            item['id'])
 
     def item_pubdate(self, item):
-        return item.ts
-
+        return item['ts']
 
 
 @require_safe
