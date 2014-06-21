@@ -1,6 +1,7 @@
 import math
 
-# __all__ = ['encode']
+# __all__ = ['encode', 'decode', 'encode_zoom']
+from django.contrib.gis.geos.point import Point
 
 _tr = "0123456789bcdefghjkmnpqrstuvwxyz"
 
@@ -9,9 +10,42 @@ _dr = [0, 1, 4, 5, 16, 17, 20, 21, 64, 65, 68, 69, 80,
        81, 84, 85, 256, 257, 260, 261, 272, 273, 276, 277,
        320, 321, 324, 325, 336, 337, 340, 341]
 
+_dm = (0, 1, 0, 1, 2, 3, 2, 3, 0, 1, 0, 1, 2, 3, 2, 3,
+       4, 5, 4, 5, 6, 7, 6, 7, 4, 5, 4, 5, 6, 7, 6, 7)
+
+
+def _cmb(s, p):
+    return (_tr.find(s[p]) << 5) | _tr.find(s[p+1])
+
+
+def _unp(v):
+    return _dm[v & 0x1F] | ((_dm[v >> 6] & 0xF) << 3)
+
+
+def decode(string):
+    le = len(string)
+    ln = 0.0
+    lt = 0.0
+
+    if le & 1:
+        w = _tr.find(string[le-1]) << 5
+    else:
+        w = _cmb(string, le-2)
+    lt = _unp(w) / 32.0
+    ln = _unp(w >> 1) / 32.0
+
+    for i in xrange((le - 2) & ~1, -1, -2):
+        w = _cmb(string, i)
+        lt = (_unp(w) + lt) / 32.0
+        ln = (_unp(w >> 1) + ln) / 32.0
+
+    ln = 360.0*(ln-0.5)
+    lt = 180.0*(lt-0.5)
+    return Point(lt, ln)
+
 
 def _sparse(val):
-    '''
+    """
     :param val: number
     :return: val with 0 bits inserted between each original bit. 0b111 => 0b10101.
 
@@ -23,7 +57,7 @@ def _sparse(val):
     5
     >>> _sparse(4)
     16
-    '''
+    """
     acc = 0
     off = 0
 
@@ -69,3 +103,8 @@ def encode_zoom(zoom):
     elif zoom > 31:
         zoom = 31
     return _tr[zoom]
+
+
+def is_valid(string):
+    # TODO real implementation
+    return True
