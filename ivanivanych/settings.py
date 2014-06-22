@@ -43,7 +43,6 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    #'django.middleware.cache.UpdateCacheMiddleware',
     'django_dont_vary_on.middleware.RemoveUnneededVaryHeadersMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -70,6 +69,23 @@ DATABASES = {
         'PASSWORD': 'testpass',
     }
 }
+
+
+# Caches
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake'
+    }
+}
+
+if DEBUG:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        }
+    }
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
