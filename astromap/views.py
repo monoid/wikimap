@@ -2,6 +2,7 @@
 from django.contrib.gis.feeds import GeoAtom1Feed, Feed
 from django.contrib.gis.geos import Point
 from django.contrib.gis.geos.polygon import Polygon
+from django.http import Http404
 from django.http import HttpResponse
 from django.template import RequestContext
 from django.template.loader import render_to_string
@@ -56,7 +57,7 @@ class AMGeoAtom1Feed(Feed):
         mode = args.get('mode')
 
         if mode not in self.VALID_MODES:
-            mode = 'latest'
+            raise Http404(u"Incorrect mode.")
 
         if mode in self.WINDOW_MODES:
             if 'lb' in args and 'rt' in args and \
