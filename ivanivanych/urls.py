@@ -15,5 +15,5 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
     url(r'^astromap/', include(astromap.urls)),
     url(r'^admin/', include(admin.site.urls)),
-    (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
+    (r'^jsi18n/$', 'astromap.views.cached_javascript_catalog', js_info_dict),
 )

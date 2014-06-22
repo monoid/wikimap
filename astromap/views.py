@@ -7,9 +7,11 @@ from django.http import HttpResponse
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.translation import get_language_from_request
-from django.views.decorators.cache import never_cache, cache_control
+from django.views.decorators.cache import cache_page, never_cache, cache_control
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST, require_safe
+from django.views.i18n import javascript_catalog
+from django_dont_vary_on.decorators import dont_vary_on
 import json
 import hashlib
 import uuid
@@ -270,6 +272,11 @@ def ajax_handler(request):
 
     return response
 
+
+@cache_page(86400, key_prefix='js18n-00')
+@dont_vary_on('Cookie')
+def cached_javascript_catalog(request, domain='djangojs', packages=None):
+    return javascript_catalog(request, domain, packages)
 
 # def auth_handler(request):
 #     return ''

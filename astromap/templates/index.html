@@ -20,7 +20,7 @@
     <div id="error">
 Alas, your browser is not supported by <a href="http://maps.google.com">Google Maps</a>.</p><p>Please, try <a href="http://www.getfirefox.com">another browser</a>.
     </div>
-    <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
+    <script type="text/javascript" src="{% url 'astromap.views.cached_javascript_catalog' %}"></script>
     <script type="text/javascript">
       var user_lang = '{{ LANG }}';
       var pts = {{ PTS_JSON|safe }};
