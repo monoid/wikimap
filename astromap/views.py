@@ -41,6 +41,9 @@ class AMGeoAtom1Feed(Feed):
     feed_type = GeoAtom1Feed
     link = '/astromap/atom'
 
+    # Used by dont_vary_on
+    __name__ = 'astromap.views.AMGeoAtom1Feed'
+
     WINDOW_MODES = frozenset(['window', 'map'])
     LATEST_MODES = frozenset(['latest', 'simple'])
     FULL_MODES = frozenset(['all', 'full'])
@@ -118,12 +121,6 @@ class AMGeoAtom1Feed(Feed):
     def item_guid(self, item):
         hash_id = hashlib.sha1(str(item['id'])).digest()[:16]
         return uuid.UUID(bytes=hash_id).urn
-
-
-@require_safe
-def atom_feed(request):
-    u""" An ATOM feed. """
-    return HttpResponse(u'atom')
 
 
 @require_safe
