@@ -6,6 +6,7 @@ from django.http import HttpResponse
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.translation import get_language_from_request
+from django.views.decorators.cache import never_cache, cache_control
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST, require_safe
 import json
@@ -129,6 +130,8 @@ def kml_feed(request):
     return HttpResponse(u'kml')
 
 
+#@never_cache  # Brocken, see https://code.djangoproject.com/ticket/13008
+@cache_control(max_age=0, no_cache=True, no_store=True)
 def login(request, token=None):
     u""" Login page and login handler, both old and social. """
     if token:
