@@ -3,6 +3,7 @@ from django.contrib.gis.feeds import GeoAtom1Feed, Feed
 from django.contrib.gis.geos import Point
 from django.contrib.gis.geos.polygon import Polygon
 from django.contrib.staticfiles.storage import staticfiles_storage
+from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -155,8 +156,8 @@ def login(request, token=None):
         response = HttpResponse(content_type='text/html; coding=utf-8')
         kook = utils.get_kook(request, response)
         response.write(render_to_string('login-show.html', {
-            'kook': kook,
-            'full_url': request.build_absolute_uri().rstrip('/'),
+            'login_url': request.build_absolute_uri(
+                "%s/%s" % (reverse('login'), kook,)),
         }, RequestContext(request)))
         return response
 
