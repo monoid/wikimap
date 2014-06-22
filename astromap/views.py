@@ -2,8 +2,10 @@
 from django.contrib.gis.feeds import GeoAtom1Feed, Feed
 from django.contrib.gis.geos import Point
 from django.contrib.gis.geos.polygon import Polygon
+from django.contrib.staticfiles.storage import staticfiles_storage
 from django.http import Http404
 from django.http import HttpResponse
+from django.shortcuts import render
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.translation import get_language_from_request
@@ -30,8 +32,8 @@ def index(request):
     pts = [utils.jsonize(pt, kook) for pt in models.Point.objects.values()]
     lang = get_language_from_request(request)
     map_type = request.GET.get('type', 'normal')
-    # Renders template
 
+    # Renders template
     response.write(render_to_string('index.html', {
         'PTS_JSON': json.dumps(pts),
         'LANG': lang,
@@ -86,7 +88,7 @@ class AMGeoAtom1Feed(Feed):
         return item['point']
 
     def items(self, params):
-        objs = models.Point.objects.all().order_by('-ts', '-id').values(
+        objs = models.Point.objects.all().values(
             'id', 'ts', 'title', 'point', 'zoom')
         mode = params['mode']
 
@@ -127,10 +129,16 @@ class AMGeoAtom1Feed(Feed):
         return uuid.UUID(bytes=hash_id).urn
 
 
+@cache_page(86400, key_prefix='js18n-00')
+@dont_vary_on('Cookie', 'Accept-Language')
 @require_safe
 def kml_feed(request):
     u""" A KML feed for Google Earth etc. """
-    return HttpResponse(u'kml')
+    return render(request, 'feed.kml', {
+        'records': models.Point.objects.all(),
+        'icon_uri': request.build_absolute_uri(
+            staticfiles_storage.url('icons32/circle-star.png')),
+    }, content_type='application/vnd.google-earth.kml+xml; charset=utf-8')
 
 
 #@never_cache  # Brocken, see https://code.djangoproject.com/ticket/13008

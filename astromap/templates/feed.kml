@@ -1,0 +1,15 @@
+{% load geoutils %}{% load staticfiles %}<?xml version="1.0" encoding="utf-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document>
+<Style id="circleStar">
+<IconStyle><scale>1</scale><Icon>
+<href>{{ icon_uri }}</href>
+</Icon><hotSpot x="0.5" y="0.5" xunits="fraction" yunits="fraction"/></IconStyle></Style>
+{% for pt in records %}<Placemark id="pm-{{ pt.id }}">
+<name>{{ pt.title }}</name>
+<description>{{ pt.title }}: {{ pt.point.x|deg2hms }}, {{ pt.point.y|deg2hms }} (#{{ pt.id }})</description>
+<styleUrl>#circleStar</styleUrl>
+<Point><coordinates>{{ pt.point.y }},{{ pt.point.x }}</coordinates></Point>
+</Placemark>{% endfor %}
+</Document>
+</kml>

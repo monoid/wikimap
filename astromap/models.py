@@ -27,5 +27,5 @@ class Point(models.Model):
 
     class Meta:
         db_table = 'points'
-        ordering = ['-ts']
+        ordering = ['-ts', '-id']
         managed = False
