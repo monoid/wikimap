@@ -321,7 +321,7 @@ function clickListener(evt) {
         // Click on marker
         if (marker.draggable) {
             pt = marker.position;
-            form = $('<div></div')
+            form = $('<div></div>')
                 .append($('<p class="pointid"></p>').text('#'+(marker.frid || '')))
                 .append($(_("<div class='req'>Ваше имя или название места:<br /></div>")))
                 .append($(_('<input class="inp"></input>'))
