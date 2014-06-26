@@ -367,11 +367,6 @@ function load() {
     //     map.addControl(new GOverviewMapControl());
     //     map.addControl(new WhoSThereControl());
     // }
-    var wt = whoSThereControl();
-    wt.index = 1;
-
-    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(wt);
-
     icons = Array(pts.length);
 
 
@@ -435,6 +430,12 @@ function load() {
         }
         if (i < pts.length) {
             setTimeout(batchAddMarker, 10);
+        } else {
+            // All points are added, it's time to add Who's there button.
+            var wt = whoSThereControl();
+            wt.index = 1;
+
+            map.controls[google.maps.ControlPosition.TOP_RIGHT].push(wt);
         }
     }
     setTimeout(batchAddMarker, 10);
