@@ -67,29 +67,18 @@ function zoomGhStr(zoom, pt) {
     return GX._tr.charAt(zoom)+GX.encode(pt.lat(), pt.lng(), 16+2*zoom)
 }
 
-function WhoSThereControl() {
-
-}
-
-WhoSThereControl.prototype.printable = function () {
-    return false;
-};
-
-WhoSThereControl.prototype.selectable = function () {
-    return false;
-};
-
-WhoSThereControl.prototype.initialize = function (map) {
+function whoSThereControl() {
     var jbutton, jpane;
+
     jbutton = this.jbutton = $('<div class="fmcontrol"></div>').text(_("Кто здесь?.."));
     jpane = this.jpane = $('#srchoutput');
 
     jbutton.click(function () {
-        map.savePosition();
+        //map.savePosition();
         var ext = map.getBounds(), i, ul = $('<ul class="srchres"></ul>');
         var found = 0;
         jpane.empty();
-        for (i = icons.length-1; i; --i) {
+        for (i = 0; i < icons.length; ++i) {
             var pt, gh;
             if (ext.contains(pt = icons[i].position)) {
                 found += 1;
@@ -100,7 +89,7 @@ WhoSThereControl.prototype.initialize = function (map) {
                                   .text(icons[i].getTitle())
                                   .click(function (evt) {
                                       map.setCenter(pt, zoom);
-                                      clickListener(m, pt, null);
+                                      clickListener.call(m, evt);
                                       evt.stopPropagation();
 
                                       return true;
@@ -120,19 +109,15 @@ WhoSThereControl.prototype.initialize = function (map) {
         $("#srchspace").fadeIn("fast");
     });
 
-    map.getContainer().appendChild(jbutton.get(0));
+    //$(controlDiv).append(jbutton);
+    // map.getContainer().appendChild(jbutton.get(0));
     return jbutton.get(0);
+}
+
+whoSThereControl.prototype.getDefaultPosition = function () {
+    return google.maps.ControlPosition.TOP_RIGHT;
 };
 
-WhoSThereControl.prototype.getDefaultPosition = function () {
-    return new GControlPosition(G_ANCHOR_TOP_RIGHT, new GSize(220, 7));
-};
-
-// This method is not documented, but some buggy version of Google
-// Maps API require it.
-WhoSThereControl.prototype.allowSetVisibility = function () {
-    return false;
-};
 
 function trim(str) {
     return str.replace(/(^\s+)|(\s+$)/g, "");
@@ -382,6 +367,10 @@ function load() {
     //     map.addControl(new GOverviewMapControl());
     //     map.addControl(new WhoSThereControl());
     // }
+    var wt = whoSThereControl();
+    wt.index = 1;
+
+    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(wt);
 
     icons = Array(pts.length);
 
