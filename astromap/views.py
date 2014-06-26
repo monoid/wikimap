@@ -59,7 +59,7 @@ class AMGeoAtom1Feed(Feed):
 
     def get_object(self, request, *args, **kwargs):
         args = request.GET
-        mode = args.get('mode')
+        mode = args.get('mode', 'simple')
 
         if mode not in self.VALID_MODES:
             raise Http404(u"Incorrect mode.")
