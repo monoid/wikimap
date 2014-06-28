@@ -3,6 +3,7 @@ from django.contrib.gis.feeds import GeoAtom1Feed, Feed
 from django.contrib.gis.geos import Point
 from django.contrib.gis.geos.polygon import Polygon
 from django.contrib.staticfiles.storage import staticfiles_storage
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.http import HttpResponse
@@ -102,7 +103,7 @@ class AMGeoAtom1Feed(Feed):
                                       max(lbx, rtx), max(lby, rty)))
             objs = objs.filter(point__contained=poly)
 
-        objs = objs[:10]
+        objs = objs[:settings.FEED_SIZE]
 
         return objs
 

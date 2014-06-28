@@ -117,3 +117,5 @@ TEMPLATE_DIRS = (
 )
 
 GOOGLE_MAPS_KEY = 'AIzaSyBC72uiKsPtdVqm-ncDshonzmUABv-Ra-A'
+
+FEED_SIZE = 20
