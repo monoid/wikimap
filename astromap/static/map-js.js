@@ -341,6 +341,19 @@ function clickListener(evt) {
     return false;
 }
 
+function anchorChanged(map) {
+    var anchor = window.location.href.split("#").pop();
+    if (anchor.length > 1 && GX.checkValid(anchor.substr(1)) && GX._tr.indexOf(anchor.charAt(0)) >= 0) {
+        var zoom=GX._tr.indexOf(anchor.charAt(0));
+        var gx = GX.decode(anchor.substr(1));
+        map.set('center', new google.maps.LatLng(gx.lat, gx.lon));
+        map.set('zoom', zoom);
+        return true;
+    } else {
+        return false;
+    }
+}
+
 function load() {
     google.maps.visualRefresh = true;
     var container = document.getElementById("map");
@@ -384,13 +397,7 @@ function load() {
     map.addListener('bounds_changed', onMove);
     $(window).resize(function () { google.maps.event.trigger(map, 'resize'); });
 
-    var anchor = window.location.href.split("#").pop();
-    if (anchor.length > 1 && GX.checkValid(anchor.substr(1)) && GX._tr.indexOf(anchor.charAt(0)) >= 0) {
-        var zoom=GX._tr.indexOf(anchor.charAt(0));
-        var gx = GX.decode(anchor.substr(1));
-        map.set('center', new google.maps.LatLng(gx.lat, gx.lon));
-        map.set('zoom', zoom);
-    } else {
+    if (!anchorChanged(map)) {
         if (window['extent'] == 'russia') {
             map.set('center', new google.maps.LatLng(59.95, 95));
             map.set('zoom', 3);
@@ -442,6 +449,10 @@ function load() {
 
     $('#srchclose').click(function () {
             $("#srchspace").fadeOut("fast");
+    });
+
+    $(window).on('hashchange', function () {
+        anchorChanged(map);
     });
 }
 
