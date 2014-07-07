@@ -31,6 +31,8 @@ def index(request):
     """
     response = HttpResponse(content_type='text/html; charset=utf-8')
     kook = utils.get_kook(request, response)
+    if request.user.is_authenticated():
+        utils.rebind_points(kook, request.user)
     pts = [utils.jsonize(pt, kook) for pt in models.Point.objects.values()]
     lang = get_language_from_request(request)
     map_type = request.GET.get('type', 'normal')

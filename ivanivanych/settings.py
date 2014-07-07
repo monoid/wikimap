@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'south',
+    'social.apps.django_app.default',
     'astromap',
 )
 
@@ -53,6 +54,27 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+)
+
+AUTHENTICATION_BACKENDS = (
+    'social.backends.open_id.OpenIdAuth',
+    'social.backends.google.GoogleOAuth2',
+    'social.backends.twitter.TwitterOAuth',
+    'social.backends.facebook.FacebookOAuth2',
+    'social.backends.vk.VKOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "django.core.context_processors.static",
+    "django.core.context_processors.tz",
+    "django.contrib.messages.context_processors.messages",
+    'social.apps.django_app.context_processors.backends',
+    'social.apps.django_app.context_processors.login_redirect',
 )
 
 ROOT_URLCONF = 'ivanivanych.urls'
@@ -119,3 +141,17 @@ TEMPLATE_DIRS = (
 GOOGLE_MAPS_KEY = 'AIzaSyBC72uiKsPtdVqm-ncDshonzmUABv-Ra-A'
 
 FEED_SIZE = 20
+
+
+# Social auth
+
+LOGIN_REDIRECT_URL = '/astromap/'
+#
+SOCIAL_AUTH_VK_OAUTH2_KEY = '3811391'
+SOCIAL_AUTH_VK_OAUTH2_SECRET ='5Ny1IqHY9u4cG5OywafO'
+SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
+
+# Test app credentials
+SOCIAL_AUTH_FACEBOOK_KEY = '882015901813524'
+SOCIAL_AUTH_FACEBOOK_SECRET = 'fdf1d22c074c6bd9dc895fc7ff452191'
+SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']

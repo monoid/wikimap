@@ -48,14 +48,23 @@ def get_kook(request, response):
         kook = request.COOKIES[OLD_AUTH_COOKIE]
     elif AUTH_COOKIE in request.COOKIES:
         kook = request.COOKIES[AUTH_COOKIE]
-    else:
+    elif request.user.is_anonymous():
         kook = gen_rnd_kook(request)
+    else:
+        kook = None
     # Update cookie time.
-    set_kook(response, kook)
+    if kook:
+        set_kook(response, kook)
     return kook
 
 
-def jsonize(dict_rec, kook):
+def rebind_points(kook, user):
+    u""" Переносим точки от kook user'у.
+    """
+    pass
+
+
+def jsonize(dict_rec, kook, user=None):
     val = dict_rec.copy()
     val['drag'] = val['kook'] == kook
     z = val['zoom'] or 13
