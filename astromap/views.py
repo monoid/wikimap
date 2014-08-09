@@ -31,9 +31,7 @@ def index(request):
     """
     response = HttpResponse(content_type='text/html; charset=utf-8')
     kook = utils.get_kook(request, response)
-    if request.user.is_authenticated():
-        utils.rebind_points(kook, request.user)
-    pts = [utils.jsonize(pt, kook) for pt in models.Point.objects.values()]
+    pts = [utils.jsonize(pt, kook, request.user) for pt in models.Point.objects.values()]
     lang = get_language_from_request(request)
     map_type = request.GET.get('type', 'normal')
 
@@ -171,7 +169,7 @@ def ajax_handler(request):
     # Мы заранее создаём response, чтобы get_kook установил в нём новую куку.
     # Затем мы в этот response пишем с помощью json.dump.
     response = HttpResponse(content_type='application/json')
-    kook = utils.get_kook(request, response)
+    kook = utils.get_kook(request, response) if request.user.is_anonymous() else None
     cmd = request.POST.get('cmd', None)
     ip = utils.inet_aton(request.META['REMOTE_ADDR'])
 
@@ -191,6 +189,7 @@ def ajax_handler(request):
                     kook=kook,
                     ip=ip,
                     ptxt='',  # Was used for debug of PHP version...
+                    owner=request.user if request.user.is_authenticated() else None,
                 )
                 json.dump({
                     'status': 'OK',
@@ -214,7 +213,10 @@ def ajax_handler(request):
             pid = form.cleaned_data['id']
             if title:
                 try:
-                    pt = models.Point.objects.get(id=pid, kook=kook)
+                    if request.user.is_authenticated():
+                        pt = models.Point.objects.get(id=pid, owner=request.user)
+                    else:
+                        pt = models.Point.objects.get(id=pid, kook=kook)
                     pt.title = title
                     pt.save()
                 except models.Point.DoesNotExist:
@@ -242,7 +244,11 @@ def ajax_handler(request):
             zoom = form.cleaned_data['zoom']
 
             try:
-                pt = models.Point.objects.get(id=pid, kook=kook)
+                if request.user.is_authenticated():
+                    pt = models.Point.objects.get(id=pid, owner=request.user)
+                else:
+                    pt = models.Point.objects.get(id=pid, kook=kook)
+
                 pt.zoom = zoom
                 pt.point = Point(lat, lon)
                 pt.save()
@@ -263,7 +269,10 @@ def ajax_handler(request):
             pid = form.cleaned_data['id']
 
             try:
-                pt = models.Point.objects.get(id=pid, kook=kook)
+                if request.user.is_authenticated():
+                    pt = models.Point.objects.get(id=pid, owner=request.user)
+                else:
+                    pt = models.Point.objects.get(id=pid, kook=kook)
                 pt.delete()
             except models.Point.DoesNotExist:
                 pass  # Если точка не найдена или чужая, делаем вид, что всё ОК

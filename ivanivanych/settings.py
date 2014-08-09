@@ -144,7 +144,6 @@ FEED_SIZE = 20
 
 
 # Social auth
-
 LOGIN_REDIRECT_URL = '/astromap/'
 #
 SOCIAL_AUTH_VK_OAUTH2_KEY = '3811391'
@@ -155,3 +154,16 @@ SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
 SOCIAL_AUTH_FACEBOOK_KEY = '882015901813524'
 SOCIAL_AUTH_FACEBOOK_SECRET = 'fdf1d22c074c6bd9dc895fc7ff452191'
 SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+
+SOCIAL_AUTH_PIPELINE = (
+    'social.pipeline.social_auth.social_details',
+    'social.pipeline.social_auth.social_uid',
+    'social.pipeline.social_auth.auth_allowed',
+    'social.pipeline.social_auth.social_user',
+    'social.pipeline.user.get_username',
+    'social.pipeline.user.create_user',
+    'social.pipeline.social_auth.associate_user',
+    'astromap.social_pipeline.register_points',
+    'social.pipeline.social_auth.load_extra_data',
+    'social.pipeline.user.user_details'
+)

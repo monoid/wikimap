@@ -1,5 +1,6 @@
 from django.contrib.gis.db import models
 
+
 class Point(models.Model):
     id = models.AutoField(primary_key=True)
     mapid = models.IntegerField(null=False)
@@ -10,6 +11,7 @@ class Point(models.Model):
     ip = models.PositiveIntegerField(null=True)  # TODO models.IPAddressField()
     ts = models.DateTimeField(auto_now=True, auto_now_add=True)
     ptxt = models.CharField(max_length=1024, null=True)
+    owner = models.ForeignKey('auth.User', null=True)
 
     objects = models.GeoManager()
 
@@ -20,6 +22,7 @@ class Point(models.Model):
                 'zoom': self.zoom,
                 'point': self.point,
                 'kook': self.kook,
+                'owner_id': self.owner_id,
                 'ts': self.ts}
 
     def __unicode__(self):

@@ -48,31 +48,31 @@ def get_kook(request, response):
         kook = request.COOKIES[OLD_AUTH_COOKIE]
     elif AUTH_COOKIE in request.COOKIES:
         kook = request.COOKIES[AUTH_COOKIE]
-    elif request.user.is_anonymous():
+    elif response is not None and request.user.is_anonymous():
         kook = gen_rnd_kook(request)
     else:
-        kook = None
+        # It is useless to generate kook
+        # if there's no response, like in
+        # PSA pipeline.
+        return None
+
     # Update cookie time.
-    if kook:
-        set_kook(response, kook)
+    set_kook(response, kook)
     return kook
 
 
-def rebind_points(kook, user):
-    u""" Переносим точки от kook user'у.
-    """
-    pass
-
-
 def jsonize(dict_rec, kook, user=None):
+    if user.is_anonymous():
+        user = None
     val = dict_rec.copy()
-    val['drag'] = val['kook'] == kook
+    val['drag'] = (val['kook'] == kook) or (user and val['owner_id'] == user.id)
     z = val['zoom'] or 13
     val['z'] = val['zoom']
     val['pt'] = geohash.encode(val['point'], 16 + 2*z)
     val['ts'] = int(time.mktime(val['ts'].utctimetuple()))
 
     del val['kook']
+    del val['owner_id']
     del val['point']
     del val['ptxt']
     del val['ip']
