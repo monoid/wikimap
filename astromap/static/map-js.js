@@ -53,16 +53,6 @@ $.ajaxSetup({
 });
 // END OF DJANGO CSRF
 
-function parseJSON(txt) {
-    if (typeof (this.JSON) === 'object' &&
-        typeof (this.JSON.parse) === 'function') {
-        return this.JSON.parse(txt);
-    } else {
-        return eval('('+txt+')');
-    }
-    
-}
-
 function zoomGhStr(zoom, pt) {
     return GX._tr.charAt(zoom)+GX.encode(pt.lat(), pt.lng(), 16+2*zoom)
 }
@@ -148,9 +138,8 @@ function addPoint(pt, form) {
         },
         success: function(msg) {
             try {
-                var resp = parseJSON(msg);
-                if (resp.status === 'OK') {
-                    var m = createMarker(map, pt, resp.id, txt, true);
+                if (msg.status === 'OK') {
+                    var m = createMarker(map, pt, msg.id, txt, true);
                     icons.push(m);
                     mc.addMarker(m);
                     //map.addOverlay(m);
