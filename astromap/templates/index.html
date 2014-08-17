@@ -15,6 +15,16 @@
       <div id="srchoutput"></div>
      </div>
     </div>
+    <div id="messagebox">
+      <div id="messagebox-body">
+        {% for message in messages %}
+            <p{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</p>
+        {% endfor %}
+      </div>
+      <div class="message-box-bottom">
+        <input id="messagebox-close" type="button" value="OK">
+      </div>
+    </div>
     <div id="error">
 Alas, your browser is not supported by <a href="http://maps.google.com">Google Maps</a>.</p><p>Please, try <a href="http://www.getfirefox.com">another browser</a>.
     </div>
@@ -24,6 +34,7 @@ Alas, your browser is not supported by <a href="http://maps.google.com">Google M
       var pts = {{ PTS_JSON|safe }};
       var type = '{{ type }}';
       var extent = 'world';
+      var auth = ('{{ user.is_authenticated }}' == 'True');
     </script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{ settings.GOOGLE_MAPS_KEY }}&amp;sensor=false"></script>
     <script type="text/javascript" src="{% static "lib/markerclusterer_packed.js" %}"></script>

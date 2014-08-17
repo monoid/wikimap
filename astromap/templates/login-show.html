@@ -5,7 +5,13 @@
     <title>Login URL</title>
 </head>
 <body>
-<p>Your login URL is: {{ login_url }} .</p>
+{% if user.is_anonymous %}
+<p>Social login:
+    <a id="vkontaktelogin" href="{% url 'social:begin' 'vk-oauth2' %}">VK.com</a>
+    <a id="facebooklogin" href="{% url 'social:begin' 'facebook' %}">Facebook</a></p>
+{% else %}
+<p>You are logged in. You may <a href="{% url 'logout' %}">logout</a>.
+{% endif %}
 <p>Proceed to <a href="{% url 'index' %}">main page</a>.</p>
 </body>
 </html>

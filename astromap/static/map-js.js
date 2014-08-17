@@ -54,60 +54,69 @@ $.ajaxSetup({
 // END OF DJANGO CSRF
 
 function zoomGhStr(zoom, pt) {
-    return GX._tr.charAt(zoom)+GX.encode(pt.lat(), pt.lng(), 16+2*zoom)
+    return GX._tr.charAt(zoom)+GX.encode(pt.lat(), pt.lng(), 16+2*zoom);
 }
 
+function createButton(label, action) {
+    var jbutton = $('<div class="fmcontrol"></div>').text(label);
+    jbutton.click(action);
+
+    return jbutton.get(0);
+}
+
+
 function whoSThereControl() {
-    var jbutton, jpane;
+    var jpane = $('#srchoutput');
 
-    jbutton = this.jbutton = $('<div class="fmcontrol"></div>').text(_("Кто здесь?.."));
-    jpane = this.jpane = $('#srchoutput');
-
-    jbutton.click(function () {
+    return createButton(_("Кто здесь?.."), (function () {
         //map.savePosition();
         var ext = map.getBounds(), i, ul = $('<ul class="srchres"></ul>');
-        var found = 0;
+        var points = [];
         jpane.empty();
         for (i = 0; i < icons.length; ++i) {
             var pt, gh;
             if (ext.contains(pt = icons[i].position)) {
-                found += 1;
                 (function (m, pt, zoom) {
-                ul.append($('<li></li>')
-                          .append($('<a></a>')
-                                  .attr('href', '#'+zoomGhStr(zoom, pt))
-                                  .text(icons[i].getTitle())
-                                  .click(function (evt) {
-                                      map.setCenter(pt, zoom);
-                                      clickListener.call(m, evt);
-                                      evt.stopPropagation();
+                    points.apppend($('<li></li>')
+                                   .append($('<a></a>')
+                                   .attr('href', '#'+zoomGhStr(zoom, pt))
+                                   .text(icons[i].getTitle())
+                                   .click(function (evt) {
+                                       map.setCenter(pt, zoom);
+                                       clickListener.call(m, evt);
+                                       evt.stopPropagation();
 
-                                      return true;
-                                  })
-                                 )
-                          .append($('<br></br>'))
-                          .append($('<span></span>').text(deg2hms(pt.lat())
-                                                          +' '
-                                                          +deg2hms(pt.lng()))));
+                                       return true;
+                                     })
+                                    )
+                                   .append($('<br></br>'))
+                                   .append($('<span></span>').text(deg2hms(pt.lat())
+                                                                   +' '
+                                                                   +deg2hms(pt.lng()))));
                 }(icons[i], pt, Number(pts[i].z)));
             }
         }
-        jpane.append(found
+        jpane.append(ul.length
                      ? ul
                      : $('<div class="srchnthng"></div>').text(
                          _("Ничего не найдено...")));
         $("#srchspace").fadeIn("fast");
-    });
-
-    //$(controlDiv).append(jbutton);
-    // map.getContainer().appendChild(jbutton.get(0));
-    return jbutton.get(0);
+    }));
 }
 
-whoSThereControl.prototype.getDefaultPosition = function () {
-    return google.maps.ControlPosition.TOP_RIGHT;
-};
-
+function loginLogout() {
+    var label, url;
+    if (auth) {
+        label = _("Выход");
+        url = 'logout';
+    } else {
+        label = _("Вход");
+        url = 'login';
+    }
+    return createButton(label, function () {
+        location.replace(url);
+    });
+}
 
 function trim(str) {
     return str.replace(/(^\s+)|(\s+$)/g, "");
@@ -343,7 +352,18 @@ function anchorChanged(map) {
     }
 }
 
+function showMessages() {
+    var m = $('#messagebox');
+    var c = $('#messagebox-close');
+    if ($('#messagebox-body').children().length > 0) {
+        $('#messagebox').show();
+        c.click(function () {
+            m.hide();
+        });
+    }
+}
 function load() {
+    showMessages();
     google.maps.visualRefresh = true;
     var container = document.getElementById("map");
     var cfg = {
@@ -427,11 +447,15 @@ function load() {
         if (i < pts.length) {
             setTimeout(batchAddMarker, 10);
         } else {
-            // All points are added, it's time to add Who's there button.
+            // All points are added, it's time to add controls
             var wt = whoSThereControl();
             wt.index = 1;
 
             map.controls[google.maps.ControlPosition.TOP_RIGHT].push(wt);
+
+            var ll = loginLogout();
+            ll.index = 2;
+            map.controls[google.maps.ControlPosition.TOP_RIGHT].push(ll);
         }
     }
     setTimeout(batchAddMarker, 10);

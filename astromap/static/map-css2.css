@@ -3,7 +3,6 @@ div.req { margin-top: 0.3em; }
 #error {display: none; border: red 1px solid; padding: 1em;}
 .usercard h3 { font-size: 100%; font-weight: bold;}
 .fmcontrol { position: absolute; background: white; border: 1px solid black; cursor: pointer; height: 15px; width: 6em; margin-top: 5px;
-
 overflow: hidden; text-align: center; position: relative; color: rgb(0, 0, 0); font-family: Roboto,Arial,sans-serif; -moz-user-select: none; font-size: 11px; background-color: rgb(255, 255, 255); padding: 1px 6px; border-bottom-left-radius: 2px; border-top-left-radius: 2px; background-clip: padding-box; border: 1px solid rgba(0, 0, 0, 0.15); box-shadow: 0px 1px 4px -1px rgba(0, 0, 0, 0.3); min-width: 31px; font-weight: 500;
  }
 #srchspace {position: absolute; top: 28px; right: 8px; width: 180px; font: 14px Arial bold; bottom: 150px; display: none; overflow: auto; }
@@ -14,6 +13,8 @@ overflow: hidden; text-align: center; position: relative; color: rgb(0, 0, 0); f
 .srchnthng { padding: 1em 1ex; font-style: italic; }
 .coords { font-size: 83%; color: #222; }
 .pointid { float: right; font-size: 72%; color: #666; margin: 3px 0.3em; }
+#messagebox { font-family: Roboto,Arial,sans-serif; position: absolute; top: 2em; left: 4em; right: 4em; max-width: 40em; display: none;background: white; border-radius: 4px; border: solid black 1px; padding: 0 1ex 0.5em 1ex;box-shadow: 0px 1px 4px -1px rgba(0, 0, 0, 0.3)}
+#messagebox-close { float: right; }
 
 /* Google Maps InfoWindow fix */
 .gm-style-iw {

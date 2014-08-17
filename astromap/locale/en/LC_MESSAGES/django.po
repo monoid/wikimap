@@ -20,3 +20,9 @@ msgstr ""
 #: templates/index.html:8
 msgid "Карта астрономов-любителей"
 msgstr "Map of amateur astronomers"
+
+msgid "Вы успешно вошли."
+msgstr "You logged in."
+
+msgid "Вы вышли."
+msgstr "You logged out."

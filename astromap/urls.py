@@ -12,6 +12,7 @@ urlpatterns = patterns('',
     url(r'^kml$', views.kml_feed, name='kml'),
     url(r'^login$', views.login, name='login'),
     url(r'^login/+(.*)$', views.login),
+    url(r'^logout$', views.logout, name='logout'),
     url(r'^ajax$', views.ajax_handler),
     # url(r'^auth$', views.auth_handler),
 )

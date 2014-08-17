@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Logout</title>
+</head>
+<body>
+{% if user.is_anonymous %}
+<p>You are not logged in.  Please, <a href="{% url 'login' %}">login</a>
+   or proceed to <a href="{% url 'index' %}">main page</a>.</p>
+{% else %}
+<form action="{% url 'logout' %}" method="POST">
+    {% csrf_token %}
+    <p><input type="submit" value="Logout"> or proceed to <a href="{% url 'index' %}">main page</a>.</p>
+</form>
+{% endif %}
+</body>
+</html>

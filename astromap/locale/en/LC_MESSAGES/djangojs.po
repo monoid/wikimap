@@ -34,3 +34,9 @@ msgstr "Who's there?.."
 
 msgid "Ничего не найдено..."
 msgstr "Nothing is found..."
+
+msgid "Вход"
+msgstr "Login"
+
+msgid "Выход"
+msgstr "Logout"

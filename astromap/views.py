@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
+from django.contrib.auth import logout as logout_user
 from django.contrib.gis.feeds import GeoAtom1Feed, Feed
 from django.contrib.gis.geos import Point
 from django.contrib.gis.geos.polygon import Polygon
+from django.contrib import messages
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.translation import get_language_from_request
@@ -143,15 +145,17 @@ def kml_feed(request):
     }, content_type='application/vnd.google-earth.kml+xml; charset=utf-8')
 
 
-#@never_cache  # Brocken, see https://code.djangoproject.com/ticket/13008
+#@never_cache  # Broken, see https://code.djangoproject.com/ticket/13008
 @cache_control(max_age=0, no_cache=True, no_store=True)
 def login(request, token=None):
     u""" Login page and login handler, both old and social. """
     if token:
         response = HttpResponse(content_type='text/html; coding=utf-8')
         utils.set_kook(response, token)
-        response.write(render_to_string('login-isset.html', {'token': token},
-                                        RequestContext(request)))
+        response.write(render_to_string('login-isset.html', {
+            'token': token,
+            'anonymous': request.user.is_anonymous(),
+        }, RequestContext(request)))
         return response
     else:
         response = HttpResponse(content_type='text/html; coding=utf-8')
@@ -161,6 +165,18 @@ def login(request, token=None):
                 "%s/%s" % (reverse('login'), kook,)),
         }, RequestContext(request)))
         return response
+
+
+#@never_cache  # Broken, see https://code.djangoproject.com/ticket/13008
+@cache_control(max_age=0, no_cache=True, no_store=True)
+def logout(request):
+    if request.method == 'POST':
+        logout_user(request)
+        messages.success(request, u"You have been logged out.")
+        print 'You have been logged out.'
+        return redirect('index')
+    else:
+        return render(request, 'logout-form.html')
 
 
 @require_POST
