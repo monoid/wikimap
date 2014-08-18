@@ -77,7 +77,7 @@ function whoSThereControl() {
             var pt, gh;
             if (ext.contains(pt = icons[i].position)) {
                 (function (m, pt, zoom) {
-                    points.apppend($('<li></li>')
+                    points.push($('<li></li>')
                                    .append($('<a></a>')
                                    .attr('href', '#'+zoomGhStr(zoom, pt))
                                    .text(icons[i].getTitle())
@@ -96,6 +96,7 @@ function whoSThereControl() {
                 }(icons[i], pt, Number(pts[i].z)));
             }
         }
+        ul.append(points);
         jpane.append(ul.length
                      ? ul
                      : $('<div class="srchnthng"></div>').text(
