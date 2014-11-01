@@ -261,7 +261,7 @@ var iwin;
 
 function createInfoWindow(pt, html) {
     if (iwin) {
-	iwin.close();
+        iwin.close();
     }
     iwin = new google.maps.InfoWindow({
 	position: pt,
@@ -347,9 +347,20 @@ function anchorChanged(map) {
         var gx = GX.decode(anchor.substr(1));
         map.set('center', new google.maps.LatLng(gx.lat, gx.lon));
         map.set('zoom', zoom);
+	$.cookie('loc', '#'+anchor);
         return true;
     } else {
         return false;
+    }
+}
+
+function readAnchorFromCookie() {
+    var a = $.cookie('loc');
+    if (a && window.location.href.length > 1) {
+       if (a.charAt(0) != '#') {
+           a = '#' + a;
+       }
+       window.location.href = a;
     }
 }
 
@@ -357,7 +368,7 @@ function showMessages() {
     var m = $('#messagebox');
     var c = $('#messagebox-close');
     if ($('#messagebox-body').children().length > 0) {
-        $('#messagebox').show();
+        m.show();
         c.click(function () {
             m.hide();
         });
@@ -407,6 +418,7 @@ function load() {
     map.addListener('bounds_changed', onMove);
     $(window).resize(function () { google.maps.event.trigger(map, 'resize'); });
 
+    readAnchorFromCookie();
     if (!anchorChanged(map)) {
         if (window['extent'] == 'russia') {
             map.set('center', new google.maps.LatLng(59.95, 95));
@@ -550,7 +562,7 @@ window['GX'] = {
         var acc = 0, off = 0;
 
         while (val > 0) {
-            low = val & 0xFF;
+            var low = val & 0xFF;
             acc |= GX._dr[low] << off;
             val >>= 8;
             off += 16;
