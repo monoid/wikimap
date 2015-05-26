@@ -151,7 +151,13 @@ def login(request, token=None):
     u""" Login page and login handler, both old and social. """
     if token:
         response = HttpResponse(content_type='text/html; coding=utf-8')
-        utils.set_kook(response, token)
+        if request.user.is_authenticated():
+            # User is logged in, bind points to account
+            Points.objects.filter(kook=token).update(owner=request.user,
+                                                     kook=None)
+        else:
+            # User is anonymous
+            utils.set_kook(response, token)
         response.write(render_to_string('login-isset.html', {
             'token': token,
             'anonymous': request.user.is_anonymous(),
