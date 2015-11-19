@@ -1,0 +1,4 @@
+django
+South
+python-social-auth
+django_dont_vary_on
