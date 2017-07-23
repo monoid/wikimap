@@ -169,3 +169,9 @@ SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.user.user_details',
     'astromap.social_pipeline.login_successful',
 )
+
+
+try:
+    from .local_settings import *
+except ImportError:
+    pass
