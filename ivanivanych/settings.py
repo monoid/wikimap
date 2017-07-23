@@ -18,8 +18,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+# This sample key should not be used.
 SECRET_KEY = 'k3363a(v)8azt%(typu%5v#%e3c=%#*uo9s^oo9r4w*oi83-gv'
 
+# Use long random string
 IP_SALT = '1234567'
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -147,7 +149,9 @@ FEED_SIZE = 20
 # Social auth
 LOGIN_REDIRECT_URL = '/astromap/'
 #
+# Use your Application ID for KEY and API key for SECRET.
 SOCIAL_AUTH_VK_OAUTH2_KEY = '3811391'
+# It was production value, but was revoked before publishing.
 SOCIAL_AUTH_VK_OAUTH2_SECRET ='5Ny1IqHY9u4cG5OywafO'
 SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
 
