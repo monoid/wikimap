@@ -1,5 +1,4 @@
 django
-South
 social-auth-core
 social-auth-app-django
 django_dont_vary_on
